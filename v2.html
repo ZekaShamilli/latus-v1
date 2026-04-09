@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MYLATUS | Supreme Identity OS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100;400;900&family=Space+Grotesk:wght@300;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #050505;
+            --accent: #00f2ff;
+            --accent-dim: rgba(0, 242, 255, 0.3);
+            --glass: rgba(255, 255, 255, 0.03);
+            --border: rgba(255, 255, 255, 0.08);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; cursor: none; }
+        body { background: var(--bg); color: #fff; font-family: 'Outfit', sans-serif; overflow-x: hidden; scroll-behavior: smooth; }
+
+        /* --- Engine: Neural Cursor --- */
+        #cursor { position: fixed; width: 8px; height: 8px; background: #fff; border-radius: 50%; z-index: 10000; pointer-events: none; mix-blend-difference: difference; transition: transform 0.1s; }
+        #cursor-aura { position: fixed; width: 50px; height: 50px; border: 1px solid var(--accent-dim); border-radius: 50%; z-index: 9999; pointer-events: none; transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1); transform: translate(-50%, -50%); }
+
+        /* --- UI: Navigation (Floating) --- */
+        nav { 
+            position: fixed; top: 30px; left: 50%; transform: translateX(-50%); 
+            width: 90%; padding: 20px 40px; display: flex; justify-content: space-between; 
+            align-items: center; z-index: 1000; background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(20px); border: 1px solid var(--border); border-radius: 100px;
+        }
+        .logo { font-weight: 900; font-size: 20px; letter-spacing: 2px; font-family: 'Space Grotesk'; color: #fff; }
+        .logo span { color: var(--accent); }
+        .nav-links { display: flex; gap: 30px; font-size: 9px; letter-spacing: 3px; text-transform: uppercase; }
+        .nav-links a { text-decoration: none; color: #666; transition: 0.3s; }
+        .nav-links a:hover { color: var(--accent); }
+
+        .page { min-height: 100vh; width: 100%; padding: 120px 80px; display: flex; flex-direction: column; position: relative; }
+
+        /* --- Section 1: Genesis --- */
+        #genesis { justify-content: center; align-items: center; text-align: center; }
+        .glitch-text { font-size: 12vw; font-weight: 900; letter-spacing: -10px; line-height: 0.8; background: linear-gradient(to bottom, #fff 40%, #333); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .hero-sub { margin-top: 30px; font-size: 10px; letter-spacing: 15px; color: var(--accent); text-transform: uppercase; }
+
+        /* --- Section 2: The Vault (Interaktiv Builder) --- */
+        #vault { background: #000; }
+        .vault-interface { display: grid; grid-template-columns: 1fr 400px; gap: 40px; margin-top: 50px; }
+        
+        .catalog { 
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; 
+            max-height: 700px; overflow-y: auto; padding-right: 15px;
+        }
+        .item-card { 
+            aspect-ratio: 1; background: var(--glass); border: 1px solid var(--border); 
+            border-radius: 15px; overflow: hidden; position: relative; transition: 0.4s;
+        }
+        .item-card img { width: 100%; height: 100%; object-fit: cover; opacity: 0.4; filter: grayscale(1); transition: 0.5s; }
+        .item-card:hover img { opacity: 0.9; filter: grayscale(0); transform: scale(1.05); }
+        .item-card.selected { border-color: var(--accent); box-shadow: 0 0 20px var(--accent-dim); }
+        .item-card.selected::after { content: '✓'; position: absolute; top: 15px; right: 15px; background: var(--accent); color: #000; width: 25px; height: 25px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; }
+
+        .builder-panel { 
+            background: #fff; color: #000; border-radius: 30px; padding: 40px; 
+            display: flex; flex-direction: column; position: sticky; top: 120px; height: 600px;
+        }
+        .builder-panel h3 { font-size: 32px; font-weight: 900; text-transform: uppercase; margin-bottom: 10px; }
+        .outfit-list { flex-grow: 1; margin-top: 30px; list-style: none; }
+        .outfit-list li { padding: 15px 0; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; font-weight: 600; }
+
+        /* --- Section 3: Synchron --- */
+        #synchron { background: #fff; color: #000; }
+        .sync-visual { width: 100%; height: 500px; background: #000; border-radius: 40px; position: relative; overflow: hidden; margin-top: 50px; }
+        .data-stream { position: absolute; font-family: monospace; font-size: 10px; color: var(--accent); opacity: 0.2; white-space: nowrap; animation: moveData 10s infinite linear; }
+        @keyframes moveData { from { transform: translateY(0); } to { transform: translateY(-100%); } }
+
+        /* --- Section 4: Identity --- */
+        .id-card-wrap { 
+            background: linear-gradient(135deg, #111 0%, #000 100%); 
+            border: 1px solid var(--border); border-radius: 40px; padding: 60px; 
+            display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center;
+        }
+        .scan-circle { width: 300px; height: 300px; border: 1px solid var(--accent); border-radius: 50%; position: relative; display: flex; align-items: center; justify-content: center; }
+        .scan-circle::before { content: ''; position: absolute; width: 110%; height: 110%; border: 1px dashed var(--accent-dim); border-radius: 50%; animation: rotate 30s infinite linear; }
+
+        /* --- Elements --- */
+        .btn-supreme { 
+            background: var(--accent); color: #000; padding: 20px 50px; border: none; 
+            border-radius: 100px; font-weight: 900; text-transform: uppercase; 
+            letter-spacing: 3px; font-size: 12px; transition: 0.4s;
+        }
+        .btn-supreme:hover { background: #fff; transform: scale(1.05); box-shadow: 0 10px 30px rgba(0, 242, 255, 0.4); }
+
+        .reveal { opacity: 0; transform: translateY(50px); transition: 1s cubic-bezier(0.2, 1, 0.3, 1); }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+
+        @keyframes rotate { from { transform: rotate(0); } to { transform: rotate(360deg); } }
+        
+        /* Custom Scrollbar for Catalog */
+        .catalog::-webkit-scrollbar { width: 2px; }
+        .catalog::-webkit-scrollbar-thumb { background: var(--accent); }
+    </style>
+</head>
+<body>
+
+    <div id="cursor"></div>
+    <div id="cursor-aura"></div>
+
+    <nav>
+        <div class="logo">MY<span>LATUS</span></div>
+        <div class="nav-links">
+            <a href="#genesis">Genesis</a>
+            <a href="#vault">Vault</a>
+            <a href="#synchron">Synchron</a>
+            <a href="#identity">Identity</a>
+        </div>
+        <button onclick="location.href='#identity'" style="background: none; border: 1px solid var(--accent); color: var(--accent); padding: 8px 20px; border-radius: 20px; font-size: 8px; letter-spacing: 2px; font-weight: 900;">ID: AX-2026</button>
+    </nav>
+
+    <!-- SECTION 1: GENESIS -->
+    <section id="genesis" class="page">
+        <div class="reveal active">
+            <div class="hero-sub">Deep Neural Fashion</div>
+            <h1 class="glitch-text">MYLATUS</h1>
+            <p style="letter-spacing: 5px; opacity: 0.5; margin-top: 20px;">NOT A BRAND. AN OPERATING SYSTEM.</p>
+            <div style="margin-top: 60px;">
+                <button class="btn-supreme" onclick="window.scrollTo(0, window.innerHeight)">Enter the Vault</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 2: THE VAULT (THE BUILDER) -->
+    <section id="vault" class="page">
+        <div class="reveal">
+            <h2 style="font-size: 5vw; font-weight: 900; letter-spacing: -2px;">THE VAULT <span style="color: var(--accent);">.</span></h2>
+            <p style="opacity: 0.4; letter-spacing: 2px;">SELECT PIECES TO GENERATE IDENTITY</p>
+        </div>
+
+        <div class="vault-interface reveal">
+            <!-- Catalog Side -->
+            <div class="catalog">
+                <div class="item-card" onclick="toggleItem(this, 'Oversized Shell', 'Outerwear')">
+                    <img src="https://images.unsplash.com/photo-1544022613-e87cd75a784a?q=80&w=400" alt="Clothes">
+                </div>
+                <div class="item-card" onclick="toggleItem(this, 'Monolith Boots', 'Footwear')">
+                    <img src="https://images.unsplash.com/photo-1608231387042-66d1773070a5?q=80&w=400" alt="Clothes">
+                </div>
+                <div class="item-card" onclick="toggleItem(this, 'Cyber Chain', 'Accessory')">
+                    <img src="https://images.unsplash.com/photo-1611085583191-a3b13b84310a?q=80&w=400" alt="Clothes">
+                </div>
+                <div class="item-card" onclick="toggleItem(this, 'Linear Trouser', 'Legwear')">
+                    <img src="https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?q=80&w=400" alt="Clothes">
+                </div>
+                <div class="item-card" onclick="toggleItem(this, 'Matrix Knit', 'Top')">
+                    <img src="https://images.unsplash.com/photo-1556906781-9a412961c28c?q=80&w=400" alt="Clothes">
+                </div>
+                <div class="item-card" onclick="toggleItem(this, 'Vision Goggles', 'Eye')">
+                    <img src="https://images.unsplash.com/photo-1572635196237-14b3f281503f?q=80&w=400" alt="Clothes">
+                </div>
+            </div>
+
+            <!-- Builder Display Side -->
+            <div class="builder-panel">
+                <p style="font-size: 10px; font-weight: 900; letter-spacing: 3px; color: #999;">MYLATUS // LOOKBOOK</p>
+                <h3 id="style-name">UNASSIGNED</h3>
+                
+                <ul class="outfit-list" id="outfit-list">
+                    <li style="color: #ccc; border: none;">Waiting for selection...</li>
+                </ul>
+
+                <div style="background: #f0f0f0; padding: 25px; border-radius: 20px;">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-end;">
+                        <div>
+                            <span style="font-size: 10px; font-weight: 900; display: block;">AI MATCH RATE</span>
+                            <span style="font-size: 40px; font-weight: 900;" id="match-rate">0%</span>
+                        </div>
+                        <button class="btn-supreme" style="padding: 15px 30px; font-size: 10px;" onclick="alert('Syncing with your Neural Identity...')">SYNC NOW</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 3: SYNCHRON -->
+    <section id="synchron" class="page">
+        <div class="reveal">
+            <h2 style="font-size: 6vw; font-weight: 900; line-height: 0.9;">REAL-TIME <br> ATOMS SYNC.</h2>
+            <div class="sync-visual">
+                <div class="data-stream" id="data-stream"></div>
+                <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; flex-direction: column;">
+                    <h4 style="color: var(--accent); font-family: 'Space Grotesk'; font-size: 50px; font-weight: 900;">SCANNING...</h4>
+                    <p style="color: #fff; opacity: 0.5; letter-spacing: 5px;">CONNECTING TO PHYSICAL STORE</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 4: IDENTITY -->
+    <section id="identity" class="page">
+        <div class="id-card-wrap reveal">
+            <div class="scan-circle">
+                <div style="text-align: center;">
+                    <h5 style="font-size: 10px; letter-spacing: 5px; color: var(--accent);">USER PROFILE</h5>
+                    <div style="font-size: 40px; font-weight: 900;">MYL-X1</div>
+                </div>
+            </div>
+            <div>
+                <h2 style="font-size: 3vw; font-weight: 900; margin-bottom: 20px;">SUPREME <br> IDENTITY</h2>
+                <div style="border-top: 1px solid var(--border); padding-top: 20px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+                        <span style="opacity: 0.5;">Archetype</span>
+                        <span style="font-weight: 900; color: var(--accent);">Hyper-Minimalist</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+                        <span style="opacity: 0.5;">Global Rank</span>
+                        <span style="font-weight: 900;">#0042</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span style="opacity: 0.5;">Bio-Sync Status</span>
+                        <span style="font-weight: 900; color: #00ff62;">OPTIMIZED</span>
+                    </div>
+                </div>
+                <p style="margin-top: 40px; line-height: 1.8; opacity: 0.6; font-size: 14px;">
+                    Sizin stiliniz sadəcə vizual deyil. MYLATUS sizin biometrik datanızı, hərəkət dinamikanızı və sosial izinizi analiz edərək sizə unikal bir rəqəmsal geyim qatmanı təqdim edir.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <footer style="padding: 60px; text-align: center; border-top: 1px solid var(--border); opacity: 0.2; font-size: 9px; letter-spacing: 5px;">
+        ©️ 2026 MYLATUS NEURAL NETWORKS
+    </footer>
+
+    <script>
+        // --- Cursor ---
+        const cursor = document.getElementById('cursor');
+        const aura = document.getElementById('cursor-aura');
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = e.clientX + 'px'; cursor.style.top = e.clientY + 'px';
+            aura.style.left = e.clientX + 'px'; aura.style.top = e.clientY + 'px';
+        });
+
+        // --- Builder Logic ---
+        let selectedItems = [];
+        function toggleItem(el, name, cat) {
+            el.classList.toggle('selected');
+            const index = selectedItems.findIndex(i => i.name === name);
+            if (index > -1) selectedItems.splice(index, 1);
+            else selectedItems.push({name, cat});
+            
+            updateBuilder();
+        }
+
+        function updateBuilder() {
+            const list = document.getElementById('outfit-list');
+            const rate = document.getElementById('match-rate');
+            const style = document.getElementById('style-name');
+
+            if (selectedItems.length === 0) {
+                list.innerHTML = '<li>Waiting...</li>';
+                rate.innerText = '0%';
+                style.innerText = 'UNASSIGNED';
+                return;
+            }
+
+            list.innerHTML = selectedItems.map(i => `<li><span>${i.name}</span> <span style="font-size:8px; opacity:0.4;">${i.cat}</span></li>`).join('');
+            
+            let match = selectedItems.length * 24;
+            rate.innerText = (match > 99 ? 99.8 : match) + '%';
+            
+            if (match > 70) style.innerText = "SUPREME CORE";
+            else if (match > 30) style.innerText = "NEURAL BASE";
+            else style.innerText = "INITIATING";
+        }
+
+        // --- Data Stream Animation ---
+        const stream = document.getElementById('data-stream');
+        for(let i=0; i<50; i++) {
+            stream.innerHTML += Math.random().toString(16).substring(2, 15) + ' SYNCING... <br>';
+        }
+
+        // --- Reveal ---
+        window.addEventListener('scroll', () => {
+            document.querySelectorAll('.reveal').forEach(el => {
+                if (el.getBoundingClientRect().top < window.innerHeight - 100) el.classList.add('active');
+            });
+        });
+
+        // --- Interaction ---
+        document.querySelectorAll('button, .item-card, a').forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                aura.style.width = '90px'; aura.style.height = '90px';
+                aura.style.background = 'rgba(0, 242, 255, 0.05)';
+            });
+            el.addEventListener('mouseleave', () => {
+                aura.style.width = '50px'; aura.style.height = '50px';
+                aura.style.background = 'none';
+            });
+        });
+    </script>
+</body>
+</html>
